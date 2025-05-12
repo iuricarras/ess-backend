@@ -12,10 +12,11 @@ in pkgs.mkShell {
       
       python-pkgs.flask-sqlalchemy
       python-pkgs.python-dotenv
-      python-pkgs.websockets
+      python-pkgs.flask-socketio
     ]))
     pkgs.openssl
     pkgs.certbot
+    pkgs.sqlite-web
   ];
 }
 

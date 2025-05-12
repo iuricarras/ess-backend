@@ -16,7 +16,6 @@ def signup():
     if user: 
         return 'User already exists', 409
 
-    
     new_user = User(username=name, password=generate_password_hash(password, method='sha256'), usertoken=generate_password_hash(name, method='sha256'))
 
     db.session.add(new_user)
