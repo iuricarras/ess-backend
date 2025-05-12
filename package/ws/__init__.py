@@ -2,7 +2,7 @@ from package import app
 from flask_socketio import SocketIO, join_room, rooms
 from package.models.user import User
 from .cluster_groups import ClusterGroups
-from .cg_groups import ClusterGroupsArray
+from .cluster_groups_array import ClusterGroupsArray
 from flask import request
 sio = SocketIO(app, cors_allowed_origins='*')
 
@@ -19,20 +19,20 @@ def connect(auth):
     cluster_group = cluster_groups_array.find_cluster_group_by_name(user.username)
     if cluster_group:
         if 'ip' in auth:
-            cluster_group.add_cluster_group({"ip": auth['ip'], "sid": request.sid})
+            cluster_group.add_cluster({"ip": auth['ip'], "sid": request.sid})
         else:
-            cluster_group.add_cluster_group({"sid": request.sid})
+            cluster_group.add_cluster({"sid": request.sid})
       
-        print('Cluster group:', cluster_group.get_cluster_groups())
+        print('Cluster group:', cluster_group.get_clusters())
     else:
         cluster_group = ClusterGroups(user.username)
         if 'ip' in auth: 
-            cluster_group.add_cluster_group({"ip": auth['ip'], "sid": request.sid})         
+            cluster_group.add_cluster({"ip": auth['ip'], "sid": request.sid})         
         else:
-            cluster_group.add_cluster_group({"sid": request.sid})
+            cluster_group.add_cluster({"sid": request.sid})
 
         cluster_groups_array.add_cluster_group(cluster_group)
-        print('Cluster group:', cluster_group.get_cluster_groups())
+        print('Cluster group:', cluster_group.get_clusters())
 
     join_room(user.username)
     print('Client connected:', ) 
@@ -42,11 +42,11 @@ def disconnect():
     print('Client disconnected:', request.sid)
     group = cluster_groups_array.find_cluster_group_by_sid(request.sid)
     if group:
-        group.remove_cluster_group_by_sid(request.sid)
-        if group.get_cluster_groups() == []:
+        group.remove_cluster_by_sid(request.sid)
+        if group.get_clusters() == []:
             cluster_groups_array.remove_cluster_group(group)
             print('Cluster group removed:', group.name)
-        print('Cluster group after disconnect:', group.get_cluster_groups())
+        print('Cluster group after disconnect:', group.get_clusters())
 
 @sio.on('get_cluster')
 def get_cluster():
@@ -55,9 +55,27 @@ def get_cluster():
     
     data = []
 
-    for cluster in group.get_cluster_groups():
+    for cluster in group.get_clusters():
         if 'ip' in cluster:
             data.append({"ip": cluster['ip']})
         
     print('Cluster ips:', data)
     return data
+
+@sio.on('*')
+def catch_all(event, data):
+    if "ip" in data:
+        group = cluster_groups_array.find_cluster_group_by_ip(data['ip'])
+        cluster = group.find_cluster_by_ip(data['ip'])
+        if cluster:
+            print('Cluster:', cluster)
+            sid = cluster['sid']
+            sio.emit(event, data, to=sid)    
+    else:
+        group = cluster_groups_array.find_cluster_group_by_sid(request.sid)
+        client = group.find_client()
+        if client:
+            print('Client:', client)
+            sio.emit(event, data, to=client['sid'])
+        else:
+            print('Client not found in group:', group.name)

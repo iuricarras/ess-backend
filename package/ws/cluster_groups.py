@@ -6,12 +6,12 @@ class ClusterGroups:
         """
         Initialize the ClusterGroups object.
 
-        :param cluster_groups: List of cluster groups.
+        :param name: Name of the cluster group.
         """
         self.name = name
         self.cluster_groups = []
 
-    def get_cluster_groups(self):
+    def get_clusters(self):
         """
         Get the list of cluster groups.
 
@@ -19,11 +19,11 @@ class ClusterGroups:
         """
         return self.cluster_groups
     
-    def add_cluster_group(self, cluster_group):
+    def add_cluster(self, cluster_group):
         """
-        Add a new cluster group.
+        Add a new cluster.
 
-        :param cluster_group: Cluster group to add.
+        :param cluster_group: Cluster to add.
         """
         self.cluster_groups.append(cluster_group)
 
@@ -35,13 +35,36 @@ class ClusterGroups:
         """
         self.cluster_groups.remove(cluster_group)
 
-    def remove_cluster_group_by_sid(self, sid):
+    def remove_cluster_by_sid(self, sid):
         """
         Remove a cluster group by session ID.
 
-        :param sid: Session ID of the cluster group to remove.
+        :param sid: Socket ID of the cluster to remove.
         """
         for cluster in self.cluster_groups:
             if cluster['sid'] == sid:
                 self.cluster_groups.remove(cluster)
                 break
+
+    def find_cluster_by_ip(self, ip):
+        """
+        Find a cluster group by IP address.
+
+        :param ip: IP address of the cluster to find.
+        :return: Cluster group if found, None otherwise.
+        """
+        for cluster in self.cluster_groups:
+            if 'ip' in cluster and cluster['ip'] == ip:
+                return cluster
+        return None
+    
+    def find_client(self):
+        """
+        Find a client in the cluster group.
+
+        :return: Client if found, None otherwise.
+        """
+        for cluster in self.cluster_groups:
+            if not 'ip' in cluster:
+                return cluster
+        return None

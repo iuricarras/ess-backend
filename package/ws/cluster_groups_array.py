@@ -53,7 +53,7 @@ class ClusterGroupsArray:
         :return: Cluster group if found, None otherwise.
         """
         for cluster_group in self.cluster_groups_array:
-            for cluster in cluster_group.get_cluster_groups():
+            for cluster in cluster_group.get_clusters():
                 if cluster['sid'] == sid:
                     return cluster_group
         return None
@@ -66,7 +66,7 @@ class ClusterGroupsArray:
         :return: Cluster group if found, None otherwise.
         """
         for cluster_group in self.cluster_groups_array:
-            for cluster in cluster_group.get_cluster_groups():
+            for cluster in cluster_group.get_clusters():
                 if 'ip' in cluster and cluster['ip'] == ip:
                     return cluster_group
         return None
