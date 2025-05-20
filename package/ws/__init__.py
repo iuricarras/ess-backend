@@ -1,5 +1,5 @@
 from package import app
-from flask_socketio import SocketIO, join_room, rooms
+from flask_socketio import SocketIO, join_room, rooms, emit
 from package.models.user import User
 from .cluster_groups import ClusterGroups
 from .cluster_groups_array import ClusterGroupsArray
@@ -60,7 +60,7 @@ def get_cluster():
             data.append({"ip": cluster['ip']})
         
     print('Cluster ips:', data)
-    return data
+    sio.emit('get_cluster', data, to=request.sid)
 
 @sio.on('*')
 def catch_all(event, data):
