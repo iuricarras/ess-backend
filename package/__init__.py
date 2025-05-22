@@ -23,5 +23,3 @@ with app.app_context():
 from package.api import api
 app.register_blueprint(api)
 import package.ws
-import package.api
-app.register_blueprint(package.api.api)
