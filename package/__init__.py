@@ -20,6 +20,8 @@ with app.app_context():
     if not os.path.exists('db.sqlite'):
         db.create_all()
 
+from package.api import api
+app.register_blueprint(api)
 import package.ws
 import package.api
 app.register_blueprint(package.api.api)

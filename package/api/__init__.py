@@ -1,7 +1,11 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify
 from werkzeug.security import generate_password_hash, check_password_hash
+
 from package.models.user import User
 from package import db
+import random
+import string
+
 
 api = Blueprint('api', __name__, url_prefix='/api')
 
@@ -16,7 +20,7 @@ def signup():
     if user: 
         return 'User already exists', 409
 
-    new_user = User(username=name, password=generate_password_hash(password, method='sha256'), usertoken=generate_password_hash(name, method='sha256'))
+    new_user = User(username=name, password=generate_password_hash(password), usertoken=''.join(random.choices(string.ascii_letters + string.digits, k=16)))
 
     db.session.add(new_user)
     db.session.commit()
@@ -35,5 +39,5 @@ def login():
     if not user or not check_password_hash(user.password, password):
         return 'Invalid credentials', 401
         
-    return 'Login successful', 200
+    return jsonify(f"{user.usertoken}"), 200
 
