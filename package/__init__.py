@@ -21,3 +21,5 @@ with app.app_context():
         db.create_all()
 
 import package.ws
+import package.api
+app.register_blueprint(package.api.api)

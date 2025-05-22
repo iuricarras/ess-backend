@@ -25,6 +25,7 @@ def signup():
 
 @api.post('/login')
 def login():
+    print(request)
     body = request.get_json()
     name = body.get('name')
     password = body.get('password')
