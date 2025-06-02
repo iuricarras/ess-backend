@@ -20,6 +20,7 @@ def connect(auth):
     if cluster_group:
         if 'ip' in auth:
             cluster_group.add_cluster({"ip": auth['ip'], "sid": request.sid})
+            print(f"Middleware {auth['ip']} - Conectado")
         else:
             cluster_group.add_cluster({"sid": request.sid})
       
@@ -28,6 +29,7 @@ def connect(auth):
         cluster_group = ClusterGroups(user.username)
         if 'ip' in auth: 
             cluster_group.add_cluster({"ip": auth['ip'], "sid": request.sid})         
+            print(f"Middleware {auth['ip']} - Conectado")
         else:
             cluster_group.add_cluster({"sid": request.sid})
 
@@ -35,7 +37,6 @@ def connect(auth):
         print('Cluster group:', cluster_group.get_clusters())
 
     join_room(user.username)
-    print('Client connected:', ) 
 
 @sio.on('disconnect')
 def disconnect():
