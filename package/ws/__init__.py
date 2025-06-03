@@ -65,7 +65,7 @@ def get_cluster():
 
 @sio.on('*')
 def catch_all(event, data):
-    if "ip" in data:
+    if isinstance(data, dict) and 'ip' in data.keys():
         group = cluster_groups_array.find_cluster_group_by_ip(data['ip'])
         cluster = group.find_cluster_by_ip(data['ip'])
         if cluster:
